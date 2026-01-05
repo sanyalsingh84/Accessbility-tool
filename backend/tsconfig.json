@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    /* File Layout */
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    /* Environment */
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    /* Types */
+    "types": ["node"],
+
+    /* Output */
+    "sourceMap": true,
+
+    /* Type Safety */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    /* Module behavior */
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+
+    /* Quality */
+    "skipLibCheck": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
