@@ -1,8 +1,8 @@
 import axe from "axe-core";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import { connectDB } from "../db/connect";
-import { RuleModel } from "../models/Rule";
+import { connectDB } from "../db/connect.js";
+import { RuleModel } from "../models/Rule.js";
 
 // configure dotenv
 dotenv.config();
