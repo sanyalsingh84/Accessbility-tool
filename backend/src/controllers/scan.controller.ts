@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { ScanModel } from "../models/Scan.js";
 import { ViolationModel } from "../models/Violation.js";
 import AppError from "../utils/AppError.js";
+import { executeScan } from "../workers/scan.worker.js"; // Import the new worker
 
 /**
  * POST /api/scans
@@ -21,8 +22,7 @@ export const createScan = async (
       status: "queued",
     });
 
-    // ⚠️ Worker will be triggered here later
-    // queue.add("scan", { scanId: scan._id });
+    executeScan(scan._id.toString());
 
     res.status(201).json({
       scanId: scan._id,
