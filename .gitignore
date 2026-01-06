@@ -36,3 +36,4 @@ pnpm-debug.log*
 *.tmp
 *.temp
 *~
+/GEMINI.md
