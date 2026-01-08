@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ScanService } from "../services/scan.service";
-import type { Scan, Violation } from "../types/scan.types";
+import type { Scan } from "../types/scan.types";
 
 export const useScanProgress = (scanId: string | undefined) => {
   const queryClient = useQueryClient();
