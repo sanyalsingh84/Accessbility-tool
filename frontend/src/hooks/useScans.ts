@@ -24,3 +24,17 @@ export const useCreateScan = () => {
     },
   });
 };
+
+/**
+ * Hook to delete a scan.
+ */
+export const useDeleteScan = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ScanService.deleteScan,
+    onSuccess: () => {
+      // When a scan is deleted, invalidate the 'scans' query to refetch the list
+      queryClient.invalidateQueries({ queryKey: ["scans"] });
+    },
+  });
+};

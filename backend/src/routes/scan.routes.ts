@@ -7,6 +7,8 @@ import {
   getScans,
   getScanById,
   getScanStatus,
+  deleteScan,
+  retryScan,
 } from "../controllers/scan.controller.js";
 
 const router = Router();
@@ -17,5 +19,7 @@ router.post("/", validate(createScanSchema), createScan);
 router.get("/", getScans);
 router.get("/:id", getScanById);
 router.get("/:id/status", getScanStatus);
+router.post("/:id/retry", retryScan);
+router.delete("/:id", deleteScan);
 
 export default router;

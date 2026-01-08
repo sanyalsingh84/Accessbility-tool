@@ -3,6 +3,8 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import DashboardPage from "./pages/DashboardPage";
+import ScanDetailPage from "./pages/ScanDetailPage";
+import { GuestRoute } from "./components/GuestRoute";
 
 export default function AppRoutes() {
   //   const isLoading = useLoaderStore((state) => state.isLoading);
@@ -14,17 +16,17 @@ export default function AppRoutes() {
         <Route
           path="/login"
           element={
-            // <GuestRoute>
-            <Login />
-            // </GuestRoute>
+            <GuestRoute>
+              <Login />
+            </GuestRoute>
           }
         />
         <Route
           path="/register"
           element={
-            // <GuestRoute>
-            <Register />
-            // </GuestRoute>
+            <GuestRoute>
+              <Register />
+            </GuestRoute>
           }
         />
         <Route
@@ -32,6 +34,14 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/scan/:id"
+          element={
+            <ProtectedRoute>
+              <ScanDetailPage />
             </ProtectedRoute>
           }
         />
