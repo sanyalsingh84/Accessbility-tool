@@ -7,7 +7,6 @@ import axe, {
 import { ScanModel } from "../models/Scan.js";
 import { RuleModel } from "../models/Rule.js";
 import { ViolationModel } from "../models/Violation.js";
-import mongoose from "mongoose";
 
 // A mapping from axe-core severity to a numeric value for scoring
 const severityValue: Record<NonNullable<AxeResult["impact"]>, number> = {

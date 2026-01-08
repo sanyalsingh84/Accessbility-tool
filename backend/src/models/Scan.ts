@@ -1,4 +1,5 @@
 import { Schema, model, Types, type InferSchemaType } from "mongoose";
+import { ViolationModel } from "./Violation.js";
 
 export type ScanStatus = "queued" | "running" | "completed" | "failed";
 
@@ -46,6 +47,13 @@ const scanSchema = new Schema(
     timestamps: true,
   }
 );
+
+// Middleware to delete associated violations when a scan is deleted
+scanSchema.post("findOneAndDelete", async function (doc) {
+  if (doc) {
+    await ViolationModel.deleteMany({ scan: doc._id });
+  }
+});
 
 export type Scan = InferSchemaType<typeof scanSchema>;
 export const ScanModel = model("Scan", scanSchema);

@@ -108,3 +108,67 @@ export const getScanStatus = async (
     next(err);
   }
 };
+
+/**
+ * POST /api/scans/:id/retry
+ * Retry a failed scan
+ */
+export const retryScan = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const scan = await ScanModel.findOne({
+      _id: req.params.id,
+      user: req.user!._id,
+    });
+
+    if (!scan) {
+      return next(new AppError("Scan not found", 404));
+    }
+
+    if (scan.status !== "failed") {
+      return next(new AppError("Only failed scans can be retried", 400));
+    }
+
+    // ✅ Create a NEW scan
+    const newScan = await ScanModel.create({
+      user: scan.user,
+      url: scan.url,
+      status: "queued",
+    });
+
+    // 🔥 Fire worker
+    executeScan(newScan._id.toString()).catch(console.error);
+
+    res.json(newScan);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * DELETE /api/scans/:id
+ * Delete a scan
+ */
+export const deleteScan = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const scan = await ScanModel.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user!._id,
+    });
+
+    if (!scan) {
+      return next(new AppError("Scan not found", 404));
+    }
+
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+};

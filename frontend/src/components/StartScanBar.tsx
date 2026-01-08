@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useCreateScan } from "../hooks/useScans";
 import { getApiErrorMessage } from "../utils/errors";
+import { useNavigate } from "react-router-dom";
 
 const StartScanBar = () => {
+  const navigate = useNavigate();
   const [url, setUrl] = useState("");
   const { mutate: createScan, isPending, error } = useCreateScan();
 
@@ -11,8 +13,9 @@ const StartScanBar = () => {
     if (!url) return;
 
     createScan(url, {
-      onSuccess: () => {
+      onSuccess: (data) => {
         setUrl(""); // Clear input on success
+        navigate(`/scan/${data.scanId}`);
       },
     });
   };
@@ -41,7 +44,7 @@ const StartScanBar = () => {
       <button
         type="submit"
         disabled={isPending}
-        className="px-6 py-2.5 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-6 py-2.5 cursor-pointer bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isPending ? "Starting..." : "Start Scan"}
       </button>

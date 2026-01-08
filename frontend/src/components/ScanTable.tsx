@@ -1,8 +1,37 @@
-import { useGetScans } from "../hooks/useScans";
+import { useNavigate } from "react-router-dom";
+import { useGetScans, useDeleteScan } from "../hooks/useScans";
 import StatusBadge from "./StatusBadge";
+import { Eye, FileDown, Trash2 } from "lucide-react";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./AlertDialog";
 
 const ScanTable = () => {
   const { data: scans, isLoading, isError, error } = useGetScans();
+  const navigate = useNavigate();
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const { mutate: deleteScan, isPending: isDeleting } = useDeleteScan();
+
+  const hanldeRedirectDetailPage = (id: string) => {
+    navigate(`/scan/${id}`);
+  };
+
+  const handleDelete = (id: string) => {
+    deleteScan(id, {
+      onSuccess: () => {
+        setDeleteId(null);
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -31,25 +60,30 @@ const ScanTable = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold text-center mb-6">Your Scans</h2>
-
-      <div className="bg-white rounded-xl shadow border overflow-hidden">
+      {/* Scans Table Section */}
+      <div className="bg-white rounded-xl shadow-md mb-8 border border-slate-200 overflow-hidden">
+        <div className="px-6 py-5 border-b border-slate-200">
+          <h2 className="text-xl font-semibold text-slate-900">Your Scans</h2>
+          <p className="text-sm text-slate-500 mt-1">
+            View and manage your accessibility scan results
+          </p>
+        </div>
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="text-left px-6 py-3 text-sm font-medium text-gray-600">
+          <thead className="">
+            <tr className="bg-slate-50 hover:bg-slate-50">
+              <th className="font-semibold px-6 py-3 text-slate-700 text-left">
                 Website
               </th>
-              <th className="text-left px-6 py-3 text-sm font-medium text-gray-600">
+              <th className="text-left px-6 py-3 font-semibold text-slate-700">
                 Date
               </th>
-              <th className="text-left px-6 py-3 text-sm font-medium text-gray-600">
+              <th className="text-left px-6 py-3 font-semibold text-slate-700">
                 Status
               </th>
-              <th className="text-left px-6 py-3 text-sm font-medium text-gray-600">
+              <th className="text-left px-6 py-3 font-semibold text-slate-700">
                 Score
               </th>
-              <th className="text-left px-6 py-3 text-sm font-medium text-gray-600">
+              <th className="text-right px-6 py-3 font-semibold text-slate-700">
                 Actions
               </th>
             </tr>
@@ -87,9 +121,29 @@ const ScanTable = () => {
                   )}
                 </td>
 
-                <td className="px-6 py-4">
-                  <button className="cursor-pointer px-4 py-1.5 text-gray-500 border rounded-lg text-sm hover:bg-gray-50">
+                <td className="px-6 py-4 flex item-center justify-end gap-2">
+                  <button
+                    onClick={() => hanldeRedirectDetailPage(scan._id)}
+                    className="flex items-center cursor-pointer px-4 py-1.5 text-gray-500 border rounded-lg text-sm hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    <Eye className="h-4 w-4 mr-1" />
                     View
+                  </button>
+                  <button
+                    // onClick={() => handleExportPDF(scan)}
+                    className="flex items-center cursor-pointer px-4 py-1.5 text-gray-500 border rounded-lg text-sm hover:bg-green-50 hover:text-green-600"
+                    // disabled={scan.status !== "Completed"}
+                  >
+                    <FileDown className="h-4 w-4 mr-1" />
+                    Export
+                  </button>
+                  <button
+                    onClick={() => setDeleteId(scan._id)}
+                    disabled={isDeleting}
+                    className="flex items-center cursor-pointer px-4 py-1.5 text-gray-500 border rounded-lg text-sm hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    Delete
                   </button>
                 </td>
               </tr>
@@ -97,6 +151,28 @@ const ScanTable = () => {
           </tbody>
         </table>
       </div>
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              scan from your dashboard.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteId(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteId && handleDelete(deleteId)}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
