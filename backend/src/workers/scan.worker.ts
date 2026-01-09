@@ -7,6 +7,7 @@ import axe, {
 import { ScanModel } from "../models/Scan.js";
 import { RuleModel } from "../models/Rule.js";
 import { ViolationModel } from "../models/Violation.js";
+import logger from "../utils/logger.js";
 
 // A mapping from axe-core severity to a numeric value for scoring
 const severityValue: Record<NonNullable<AxeResult["impact"]>, number> = {
@@ -32,16 +33,16 @@ const computeScore = (violations: AxeResult[]) => {
 };
 
 export const executeScan = async (scanId: string) => {
-  console.log(`[Worker] Starting scan for ID: ${scanId}`);
+  logger.info({ scanId }, `[Worker] Starting scan`);
   const scan = await ScanModel.findById(scanId);
 
   if (!scan) {
-    console.error(`[Worker] Scan not found for ID: ${scanId}`);
+    logger.error({ scanId }, `[Worker] Scan not found`);
     return;
   }
 
   if (scan.status !== "queued") {
-    console.warn(`[Worker] Scan ${scanId} already processed`);
+    logger.warn({ scanId, status: scan.status }, `[Worker] Scan already processed`);
     return;
   }
   // 1. Mark scan as running
@@ -85,9 +86,9 @@ export const executeScan = async (scanId: string) => {
           // Log missing rule once
           if (!missingRuleIds.has(v.id)) {
             missingRuleIds.add(v.id);
-            console.warn(
-              `[Worker] Missing rule definition for axe rule: "${v.id}". ` +
-                `Consider seeding this rule.`
+            logger.warn(
+              { scanId, ruleId: v.id },
+              `[Worker] Missing rule definition for axe rule. Consider seeding this rule.`
             );
           }
           return [];
@@ -111,16 +112,15 @@ export const executeScan = async (scanId: string) => {
     scan.score = computeScore(axeResults.violations);
 
     if (missingRuleIds.size > 0) {
-      console.warn(
-        `[Worker] Scan ${scanId} completed with ${missingRuleIds.size} ` +
-          `unrecognized rule(s):`,
-        Array.from(missingRuleIds)
+      logger.warn(
+        { scanId, unrecognizedRules: Array.from(missingRuleIds) },
+        `[Worker] Scan completed with unrecognized rule(s)`
       );
     }
 
     // 7. Mark scan as completed
     scan.status = "completed";
-    console.log(`[Worker] Scan completed for ID: ${scanId}`);
+    logger.info({ scanId }, `[Worker] Scan completed`);
   } catch (error: any) {
     // 7. Mark scan as failed
     scan.status = "failed";
@@ -129,13 +129,13 @@ export const executeScan = async (scanId: string) => {
     } else {
       scan.error = "An unknown error occurred during the scan.";
     }
-    console.error(`[Worker] Scan failed for ID: ${scanId}`, error);
+    logger.error({ scanId, error }, `[Worker] Scan failed`);
   } finally {
     if (browser) {
       await browser.close();
     }
     scan.completedAt = new Date();
     await scan.save();
-    console.log(`[Worker] Finished processing for scan ID: ${scanId}`);
+    logger.info({ scanId }, `[Worker] Finished processing`);
   }
 };
