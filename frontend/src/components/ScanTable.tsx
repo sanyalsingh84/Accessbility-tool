@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useGetScans, useDeleteScan } from "../hooks/useScans";
 import StatusBadge from "./StatusBadge";
-import { Eye, FileDown, Trash2 } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -13,6 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./AlertDialog";
+import Loader from "./Loader";
 
 const ScanTable = () => {
   const { data: scans, isLoading, isError, error } = useGetScans();
@@ -35,7 +36,9 @@ const ScanTable = () => {
 
   if (isLoading) {
     return (
-      <div className="text-center text-gray-500">Loading your scans...</div>
+      <div className="py-12">
+        <Loader />
+      </div>
     );
   }
 
@@ -91,7 +94,7 @@ const ScanTable = () => {
 
           <tbody>
             {scans.map((scan) => (
-              <tr key={scan._id} className="border-t">
+              <tr key={scan._id} className="border-t border-gray-300">
                 <td className="px-6 py-4 text-sm text-gray-800 truncate max-w-xs">
                   {scan.url}
                 </td>
@@ -129,14 +132,14 @@ const ScanTable = () => {
                     <Eye className="h-4 w-4 mr-1" />
                     View
                   </button>
-                  <button
+                  {/* <button
                     // onClick={() => handleExportPDF(scan)}
                     className="flex items-center cursor-pointer px-4 py-1.5 text-gray-500 border rounded-lg text-sm hover:bg-green-50 hover:text-green-600"
                     // disabled={scan.status !== "Completed"}
                   >
                     <FileDown className="h-4 w-4 mr-1" />
                     Export
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => setDeleteId(scan._id)}
                     disabled={isDeleting}
@@ -162,7 +165,9 @@ const ScanTable = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteId(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setDeleteId(null)}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteId && handleDelete(deleteId)}
               disabled={isDeleting}
