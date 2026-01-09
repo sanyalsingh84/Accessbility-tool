@@ -13,6 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./AlertDialog";
+import Loader from "./Loader";
 
 const ScanTable = () => {
   const { data: scans, isLoading, isError, error } = useGetScans();
@@ -35,7 +36,9 @@ const ScanTable = () => {
 
   if (isLoading) {
     return (
-      <div className="text-center text-gray-500">Loading your scans...</div>
+      <div className="py-12">
+        <Loader />
+      </div>
     );
   }
 

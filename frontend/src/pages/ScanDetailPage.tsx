@@ -6,6 +6,7 @@ import Violations from "../components/Violations";
 import { useScanProgress } from "../hooks/useScanProgress";
 import BackButton from "../components/BackButton";
 import { useRetryScan } from "../hooks/useRetryScan";
+import Loader from "../components/Loader";
 
 const ScanDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -33,7 +34,11 @@ const ScanDetailPage = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>; // TODO: Add a proper loading spinner/skeleton
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader size="lg" />
+      </div>
+    );
   }
 
   if (isError) {
