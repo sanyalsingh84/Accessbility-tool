@@ -11,7 +11,7 @@ import scanRoutes from "./routes/scan.routes.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 const app = express();
 
@@ -43,7 +43,7 @@ app.get("/health", (_, res) => {
     await connectDB();
     console.log("✅ Database connected");
 
-    app.listen(PORT, () => {
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(
         `🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
       );
