@@ -10,16 +10,17 @@ import {
   deleteScan,
   retryScan,
 } from "../controllers/scan.controller.js";
+import {scanLimiter} from "../middleware/rateLimit.js"
 
 const router = Router();
 
 router.use(protect);
 
-router.post("/", validate(createScanSchema), createScan);
+router.post("/", validate(createScanSchema), scanLimiter, createScan);
 router.get("/", getScans);
 router.get("/:id", getScanById);
 router.get("/:id/status", getScanStatus);
-router.post("/:id/retry", retryScan);
+router.post("/:id/retry", scanLimiter,  retryScan);
 router.delete("/:id", deleteScan);
 
 export default router;
