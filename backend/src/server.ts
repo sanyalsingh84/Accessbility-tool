@@ -15,6 +15,7 @@ const PORT = Number(process.env.PORT) || 3000;
 
 const app = express();
 
+app.set("trust proxy", 1); // ✅ TRUST PROXY (Render / Railway / Vercel)
 app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
